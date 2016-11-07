@@ -130,7 +130,7 @@ Most entities in Oberon are derived from this base type.
   GenName = ARRAY 64 OF CHAR;
 
     LibDesc* = RECORD  (** Container for persistent objects. *)
-      next[UNTRACED]: Library; (* offset used by Fonts.GetCharObj, also next offset *)
+      next(*[UNTRACED]*): Library; (* offset used by Fonts.GetCharObj, also next offset *)
       ind*: Index;  (** Library contents. *)
       f: Files.File;  (* file containing data *)
       R: Files.Rider;  (* a rider on the lib file *)
@@ -167,7 +167,7 @@ Most entities in Oberon are derived from this base type.
   AliasDesc = RECORD
     next: Alias;
     name: Name;
-    lib[UNTRACED]: Library
+    lib(*[UNTRACED]*): Library
   END;
   
   VAR
@@ -675,14 +675,14 @@ Most entities in Oberon are derived from this base type.
     VAR cur: Entry;
   BEGIN
     IF D IS ListDict THEN
-      WITH D: ListDict DO
-        cur := D.first;
+      (*WITH D: ListDict DO*)
+        cur := D(ListDict).first;
         WHILE (cur # NIL) & ((cur.key >= 0) OR (cur.name # name)) DO cur := cur.next END;
-        IF cur = NIL THEN DEC(D.key);
-          NEW(cur); cur.key := D.key; COPY(name, cur.name); cur.next := D.first; D.first := cur
+        IF cur = NIL THEN DEC(D(ListDict).key);
+          NEW(cur); cur.key := D(ListDict).key; COPY(name, cur.name); cur.next := D(ListDict).first; D(ListDict).first := cur
         END;
         key := cur.key
-      END
+      (*END*)
     ELSE key := MIN(INTEGER)
     END 
   END GetKey;
@@ -706,14 +706,14 @@ Most entities in Oberon are derived from this base type.
   BEGIN
     IF D IS ListDict THEN
       IF key >= 0 THEN
-        WITH D: ListDict DO
-          cur := D.first;
+        (*WITH D: ListDict DO*)
+          cur := D(ListDict).first;
           WHILE (cur # NIL) & (cur.key # key) DO cur := cur.next END;
           IF cur = NIL THEN
-          NEW(cur); cur.key := key; cur.next := D.first; D.first := cur
+          NEW(cur); cur.key := key; cur.next := D(ListDict).first; D(ListDict).first := cur
           END;
           COPY(name, cur.name)
-        END
+        (*END*)
       END
     END
   END PutName;
