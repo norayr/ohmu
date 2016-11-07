@@ -8,7 +8,7 @@ It provides the system with the type Object and defines what messages objects un
 Most entities in Oberon are derived from this base type.
 *)
 
-  IMPORT SYSTEM, Kernel, Files, Modules;
+  IMPORT SYSTEM, (*Kernel,*) Files, Modules;
 
   CONST
     enum* = 0; get* = 1; set* = 2; (** AttrMsg and LinkMsg id *)
@@ -243,7 +243,7 @@ Most entities in Oberon are derived from this base type.
           proc := LibNew[n];
           L := proc();
           COPY(name, L.name);
-          L.Load(L);  Kernel.RegisterObject(L, Cleanup, FALSE);
+          L.Load(L);  (*Kernel.RegisterObject(L, Cleanup, FALSE);*)
           IF name = L.name THEN
             L.next := FirstLib.next; FirstLib.next := L
           ELSE
