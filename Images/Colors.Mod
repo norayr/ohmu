@@ -184,6 +184,7 @@ MODULE Colors; (** portable **)  (* eos  *)
   END MakeIndex;
   
   (** update the inverse color lookup table for the display palette **)
+  (*
   PROCEDURE Update*;
     VAR colors, n: INTEGER; red, green, blue: ARRAY 256 OF INTEGER;
   BEGIN
@@ -194,7 +195,7 @@ MODULE Colors; (** portable **)  (* eos  *)
     END;
     MakeIndex(DisplayIndex, DisplayBits, colors, Red, Green, Blue)
   END Update;
-  
+  *)
   
   (**--- Conversion Routines ---**)
   
