@@ -8,7 +8,7 @@ MODULE Colors; (** portable **)  (* eos  *)
   **)
   
   IMPORT
-    Files, Objects, Display, Strings;
+    Files, Objects, Display, Strings := ethStrings, Out;
     
   
   CONST
@@ -271,6 +271,8 @@ MODULE Colors; (** portable **)  (* eos  *)
       | 3: r := p; g := q; b := v
       | 4: r := t; g := p; b := v
       | 5: r := v; g := p; b := q
+      ELSE
+        Out.String ("unhandled case on line 274 in Colors.Mod"); Out.Ln
       END
     END
   END HSVToRGB;
