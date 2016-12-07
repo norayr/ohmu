@@ -646,9 +646,9 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 			END;
 			INC(desti, destb); DEC(srci, srcw)
 		END;
-		Kernel.Lock();
+		Heap.Lock();
 		pixmap := CreateBitmapFromData(display, primary, S.ADR(data[0]), w, h);
-		Kernel.Unlock();
+		Heap.Unlock();
 		IF pixmap = 0 THEN HALT(99) END ;
 		pat := S.VAL(PatternPtr, Kernel.malloc(SIZE(PatternDesc)));
 		pat.x := 0; pat.y := 0; pat.w := width; pat.h := height; pat.pixmap := pixmap;
@@ -658,9 +658,9 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 	PROCEDURE RasterToPixmap*(base, width, height: LONGINT): LONGINT;
 		VAR pixmap: Pixmap;
 	BEGIN
-		Kernel.Lock();
+		Heap.Lock();
 		pixmap := CreateBitmapFromData(display, primary, base, width, height);
-		Kernel.Unlock();
+		Heap.Unlock();
 		IF pixmap = 0 THEN HALT(99) END ;
 		RETURN pixmap
 	END RasterToPixmap;
@@ -669,7 +669,7 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 		VAR xcol, cfore, cback: Color;
 			error: ARRAY 15 OF CHAR;
 	BEGIN
-		Kernel.Lock();
+		Heap.Lock();
 		IF depth = 24 (* hack to support TrueColor displays *) THEN  
 			pixelValues[col] := ASH(red, 16) + ASH(green, 8) + ASH(blue, 0)
 		ELSIF depth = 16 (* e.g. Raspberry Pi default setting *) THEN
@@ -695,7 +695,7 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 				RecolorCursor(display, arrow, S.ADR(cfore), S.ADR(cback))
 			END
 		END ;
-		Kernel.Unlock();
+		Heap.Unlock();
 	END SetColor;
 
 	PROCEDURE GetColor*(col: INTEGER; VAR red, green, blue: INTEGER);
@@ -705,7 +705,7 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 	PROCEDURE FlushLCache*;
 		VAR gc: GC; window: Window;
 	BEGIN
-		Kernel.Lock();
+		Heap.Lock();
 		gc := Gc;
 		IF lcmode = paint THEN lcmode := replace END ;
 		(* DrawString modifies only foreground pixels, replace and paint modes work as Oberon paint mode *)
@@ -715,19 +715,19 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 		IF lcy0 >= 0 THEN window := primary ELSE window := secondary; DEC(lcy0, UBottom) END ;
 		DrawString(display, window, gc, lcx0, Height-lcy0, S.ADR(lcache), lclen);
 		lclen := 0;
-		Kernel.Unlock()
+		Heap.Unlock()
 	END FlushLCache;
 
 	PROCEDURE DoSync*;
 	BEGIN
 		IF lclen > 0 THEN FlushLCache END ;
-		Kernel.Lock(); Sync(display, 0); Kernel.Unlock()
+		Heap.Lock(); Sync(display, 0); Heap.Unlock()
 	END DoSync;
 
 	PROCEDURE DoFlush*;
 	BEGIN
 		IF lclen > 0 THEN FlushLCache END ;
-		Kernel.Lock(); Flush(display); Kernel.Unlock()
+		Heap.Lock(); Flush(display); Heap.Unlock()
 	END DoFlush;
 
 	PROCEDURE Rebind*(keyString: ARRAY OF CHAR; VAR modifierStrings: Modlist; nofmod: LONGINT;
@@ -770,7 +770,7 @@ MODULE X11;	(* RC 12.10.92, JT 13.12.94 *)
 		Args.Get(Args.Pos("-d") + 1, displayArg);
 		Args.Get(Args.Pos("-g") + 1, geometryArg);
 		display := OpenDisplay(displayArg);
-		IF display = 0 THEN Console.String("Cannot open display"); Console.Ln; Kernel.Exit(1) END ;
+		IF display = 0 THEN Console.String("Cannot open display"); Console.Ln; Platform.Exit(1) END ;
 		S.GET(display+8, fd);
 		INCL(Kernel.readSet[0], fd);
 		screen := DefaultScreen(display);
